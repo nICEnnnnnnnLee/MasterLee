@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "MasterLee",
-    "version": "0.0.0"
+    "version": "0.0.4"
   },
   "tauri": {
     "allowlist": {
@@ -16,6 +16,17 @@
       "shell": {
         "all": false,
         "open": true
+      },
+      "dialog": {
+        "all": false,
+        "open": true
+      },
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": [
+          "https://127.n1ce.top/*"
+        ]
       },
       "fs": {
         "all": true,
@@ -66,7 +77,12 @@
       "csp": null
     },
     "updater": {
-      "active": false
+      "active": true,
+      "endpoints": [
+        "https://127.n1ce.top/tauri-latest.json"
+      ],
+      "dialog": false,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlEQkQ5OUJCOEFFM0E2REIKUldUYnB1T0t1NW05blpCSUlnZjZjc0V2VU1TVi9lYVd3NmxYb28ybDROa1JGYnA5VGN0U3hKM2EK"
     },
     "windows": [
       {
