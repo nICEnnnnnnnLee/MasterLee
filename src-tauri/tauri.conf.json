@@ -16,6 +16,15 @@
       "shell": {
         "all": false,
         "open": true
+      },
+      "fs": {
+        "all": true,
+        "scope": [
+          "$RESOURCE/**/*"
+        ]
+      },
+      "path": {
+        "all": true
       }
     },
     "bundle": {
@@ -33,8 +42,8 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
-      "longDescription": "",
+      "identifier": "io.github.nICEnnnnnnnLee.master-lee",
+      "longDescription": "长一点的介绍",
       "macOS": {
         "entitlements": null,
         "exceptionDomain": "",
@@ -42,8 +51,10 @@
         "providerShortName": null,
         "signingIdentity": null
       },
-      "resources": [],
-      "shortDescription": "",
+      "resources": [
+        "resources/*"
+      ],
+      "shortDescription": "简短的介绍",
       "targets": "all",
       "windows": {
         "certificateThumbprint": null,
