@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-
+import { resolve } from 'path';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
@@ -23,5 +23,11 @@ export default defineConfig({
     minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_DEBUG,
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        host: resolve(__dirname, 'host.html')
+      }
+    }
   },
 });

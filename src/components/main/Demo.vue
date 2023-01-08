@@ -6,12 +6,10 @@ import { resolveResource } from '@tauri-apps/api/path'
 import { readTextFile } from '@tauri-apps/api/fs'
 // alternatively, use `window.__TAURI__.fs.readTextFile`
 
-import { checkUpdate, installUpdate } from '@tauri-apps/api/updater'
-import { relaunch } from '@tauri-apps/api/process'
-
-
 const greetMsg = ref("");
 const name = ref("");
+
+
 
 async function greet() {
   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -30,37 +28,22 @@ async function readConfFromRust() {
   greetMsg.value = "read using rust: " + await invoke("read_conf");
 }
 
-async function update() {
-  try {
-    const { shouldUpdate, manifest } = await checkUpdate()
-    console.log(shouldUpdate, manifest);
-    if (shouldUpdate) {
-      // display dialog
-      await installUpdate()
-      // install complete, restart the app
-      await relaunch()
-    }
-  } catch (error) {
-    console.log(error)
-  }
-}
 </script>
 
-<style>
-.btn {
-  margin-top: 5px;
-}
-</style>
+
 <template>
   <div class="card">
     <input id="greet-input" v-model="name" placeholder="Enter a name..." />
     <button type="button" @click="greet()">Greet</button>
   </div>
+  <p>{{ greetMsg }}</p>
   <div class="btn">
     <button type="button" @click="readConf()">ReadConf</button>
     <button type="button" @click="readConfFromRust()">ReadConf2</button>
-    <button type="button" @click="update()">检查更新</button>
   </div>
 
-  <p>{{ greetMsg }}</p>
 </template>
+
+<style scoped>
+
+</style>
