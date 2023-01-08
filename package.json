@@ -1,0 +1,24 @@
+{
+  "name": "master-lee",
+  "private": true,
+  "version": "0.0.6",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "update": "node ./.github/scripts/update.mjs"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^1.2.0",
+    "vue": "^3.2.45"
+  },
+  "devDependencies": {
+    "@actions/github": "^5.0.1",
+    "node-fetch": "^3.3.0",
+    "@tauri-apps/cli": "^1.2.2",
+    "@vitejs/plugin-vue": "^4.0.0",
+    "vite": "^4.0.0"
+  }
+}
