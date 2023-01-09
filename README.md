@@ -16,6 +16,7 @@
 + 点击`查找可用IP`按钮, 根据现有的DoH服务查找并筛选最优ip(需要等待上一步完成)
 + 点击`打开Proxy`
 + ps： 之后可以在不关闭Proxy的情况下, 更新DoH(可以不更新) 和 host ip
++ ps： 你可以在`data/host.txt`、`data/doh.txt`找到相关配置
 
 ### HTTP 代理
 和其它代理使用方法一致
