@@ -48,26 +48,18 @@ fn main() {
     tauri::Builder::default()
         .system_tray(system_tray)
         .on_system_tray_event(|app, event| match event {
-            SystemTrayEvent::LeftClick {
-                position: _,
-                size: _,
-                ..
-            } => {
+            SystemTrayEvent::LeftClick {..} => {
                 println!("system tray received a left click");
             }
-            SystemTrayEvent::RightClick {
-                position: _,
-                size: _,
-                ..
-            } => {
+            SystemTrayEvent::RightClick { .. } => {
                 println!("system tray received a right click");
             }
-            SystemTrayEvent::DoubleClick {
-                position: _,
-                size: _,
-                ..
-            } => {
-                println!("system tray received a double click");
+            SystemTrayEvent::DoubleClick { .. } => {
+                let window = app.get_window("main").unwrap();
+                if !window.is_visible().unwrap() {
+                    window.show().unwrap();
+                    window.unminimize().unwrap();
+                }
             }
             SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
                 "quit" => {
@@ -106,11 +98,15 @@ fn main() {
             commands::proxy::stop_proxy,
             commands::dns::pull_doh_servers_and_set_resolvers,
             commands::dns::query_dns_and_set_host,
+            commands::dns::get_all_hosts,
+            commands::dns::get_all_doh_servers,
+            commands::dns::add_doh_servers,
+            commands::dns::add_hosts,
         ])
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
         .run(|app_handle, event| match event {
-            tauri::RunEvent::ExitRequested { api:_api, .. } => {
+            tauri::RunEvent::ExitRequested { api: _api, .. } => {
                 // api.prevent_exit();
                 app_handle.trigger_global("stop-proxy", None);
                 // std::process::exit(0);

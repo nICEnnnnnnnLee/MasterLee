@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 
 import Proxy from "./main/Proxy.vue";
 import Update from "./main/Update.vue";
@@ -31,8 +31,23 @@ _bind_port = Number(_bind_port)
 
 const bind_ip = ref(_bind_ip);
 const bind_port = ref(_bind_port);
+const tips_load_config = ref("");
 const domains_str = ref(_domains)
-
+const doh = ref()
+const host = ref()
+onMounted(() => {
+  loadConfig()
+})
+const loadConfig = async () => {
+  tips_load_config.value = "尝试读取配置..."
+  try {
+    await doh.value.init()
+    await host.value.init()
+    tips_load_config.value = "配置读取完毕"
+  } catch (err) {
+    tips_load_config.value = "相关配置不存在"
+  }
+}
 </script>
 
 
@@ -49,11 +64,37 @@ const domains_str = ref(_domains)
       <input id="port-input" type="number" style="width: 50px;" v-model="bind_port" placeholder="port" />
     </p>
   </div>
-  <DoH/>
-  <Host :domains_str="domains_str" />
-  <Proxy :bind_ip="bind_ip" :bind_port="bind_port"  />
-  <Update/>
+  <div class="row">
+    <div class="btn">
+      <button type="button" @click="loadConfig">从配置文件加载</button>
+      <span class="tips">{{ tips_load_config }}</span>
+    </div>
+  </div>
+  <DoH ref="doh" />
+  <Host ref="host" :domains_str="domains_str" />
+  <Proxy :bind_ip="bind_ip" :bind_port="bind_port" />
+  <Update />
 </template>
 
 <style scoped>
+.btn {
+  margin-top: 5px;
+}
+
+button {
+  width: 190px;
+}
+
+.tips {
+  overflow-x: hidden;
+  overflow-y: hidden;
+  white-space: nowrap;
+  word-break: keep-all;
+  text-overflow: ellipsis;
+  margin-left: 10px;
+  text-align: start;
+  display: inline-block;
+  width: 190px;
+  max-height: 40px;
+}
 </style>
