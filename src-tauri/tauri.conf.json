@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "MasterLee",
-    "version": "0.0.6"
+    "version": "0.0.7"
   },
   "tauri": {
     "allowlist": {
@@ -31,7 +31,10 @@
       "fs": {
         "all": true,
         "scope": [
-          "$RESOURCE/**/*"
+          "$RESOURCE/**/*",
+          "$AppData/**/*",
+          "$App/**/*",
+          "$Data/**/*"
         ]
       },
       "window":{
@@ -88,7 +91,9 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://github.com/nICEnnnnnnnLee/MasterLee/releases/download/updater/update.json"
+        "https://github.com/nICEnnnnnnnLee/MasterLee/releases/download/updater/update.json",
+        "https://hub.fgit.ml/nICEnnnnnnnLee/MasterLee/releases/download/updater/update.json",
+        "https://ghproxy.com/https://github.com/nICEnnnnnnnLee/MasterLee/releases/download/updater/update.json"
       ],
       "dialog": false,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlEQkQ5OUJCOEFFM0E2REIKUldUYnB1T0t1NW05blpCSUlnZjZjc0V2VU1TVi9lYVd3NmxYb28ybDROa1JGYnA5VGN0U3hKM2EK"
@@ -96,7 +101,7 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 525,
+        "height": 555,
         "width": 423,
         "decorations":true,
         "resizable": true,

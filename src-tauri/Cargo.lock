@@ -1515,7 +1515,7 @@ dependencies = [
 
 [[package]]
 name = "master_lee"
-version = "0.0.4"
+version = "0.0.6"
 dependencies = [
  "base64",
  "bitflags",
