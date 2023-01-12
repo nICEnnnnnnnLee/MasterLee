@@ -59,8 +59,13 @@ function open_window_host() {
   const webview = new WebviewWindow('dns', {
     url: 'dns.html',
     width: 300,
+    minWidth: 300,
     height: 500,
+    minHeight: 500,
+    center: true,
+    title: 'DNS查询',
     decorations: false,
+    focus: true,
   })
   webview.once('tauri://created', function () {
     console.log('webview window successfully created');
