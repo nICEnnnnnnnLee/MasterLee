@@ -6,7 +6,7 @@ import { readTextFile, writeTextFile, createDir } from '@tauri-apps/api/fs'
 
 
 const tips = ref("当前host为空");
-const { domains_str } = defineProps(['domains_str']);
+let propss = defineProps(['domains_str', 'timeout']);
 const init = () => {
   return new Promise(function (resolve, reject) {
     readConf().then((conf) => {
@@ -47,9 +47,10 @@ async function saveConf(conf) {
 
 async function query_dns_and_set_host() {
   tips.value = "进行中..."
-  let domains = domains_str.split("\n").map(val => val.trim()).filter(val => val != "" && !val.startsWith("#"))
-  localStorage && localStorage.setItem('_domains', domains_str)
-  invoke("query_dns_and_set_host", { domains }).then(() => {
+  let domains = propss.domains_str.split("\n").map(val => val.trim()).filter(val => val != "" && !val.startsWith("#"))
+  localStorage && localStorage.setItem('_domains', propss.domains_str)
+  localStorage && localStorage.setItem('_timeout', propss.timeout)
+  invoke("query_dns_and_set_host", { domains, timeout: propss.timeout }).then(() => {
     tips.value = "已完成..."
     invoke('get_all_hosts')
       .then((hosts) => {

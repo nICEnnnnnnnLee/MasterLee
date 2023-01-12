@@ -8,6 +8,8 @@ use crate::core::dns_stamp::Addr::Port;
 use crate::core::dns_stamp::Addr::SocketAddr;
 use dashmap::DashMap;
 use dashmap::DashSet;
+use serde::Serializer;
+use serde::ser::SerializeMap;
 use tokio::io::AsyncWriteExt;
 use tokio::time::timeout;
 use trust_dns_resolver::config::*;
@@ -29,6 +31,17 @@ impl DnsResult {
     }
 }
 
+impl serde::Serialize for DnsResult{
+    fn serialize<S>(&self, serializer: S) -> core::result::Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut s = serializer.serialize_map(Some(2))?;
+        s.serialize_entry("ip", &self.ip)?;
+        s.serialize_entry("cost", &(*&self.cost as u32))?;
+        s.end()
+    }
+}
 impl std::fmt::Display for DnsResult {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_fmt(format_args!("{} - {}ms", self.ip, self.cost))
@@ -299,7 +312,7 @@ pub async fn query_domain_for_valid_ips(
                     Ok(Ok((_r, mut w))) => {
                         let end = tokio::time::Instant::now();
                         let cost = end.duration_since(begin).as_millis();
-                        // println!("{} 耗时： {}ms", ip, cost);
+                        // println!("{} {} 耗时： {}ms", domain, ip, cost);
                         let _ = w.shutdown().await;
                         result.push(DnsResult::new(ip, cost));
                         if only_find_first {

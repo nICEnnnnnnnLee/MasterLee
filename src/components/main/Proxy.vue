@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps } from "vue";
+import { ref } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
 import { } from 'vue';
 // const props = defineProps(['bind_ip', 'bind_port']);
