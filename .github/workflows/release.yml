@@ -38,7 +38,7 @@ jobs:
               tag_name: `v${process.env.PACKAGE_VERSION}`,
               name: `MasterLee v${process.env.PACKAGE_VERSION}`,
               body,
-              draft: false,
+              draft: true,
               prerelease: false
             })
             return data.id
@@ -51,7 +51,13 @@ jobs:
         platform: [macos-latest, ubuntu-20.04, windows-latest]
 
     runs-on: ${{ matrix.platform }}
-    steps:        
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -84,6 +90,21 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+          
+      - name: publish release
+        id: publish-release
+        uses: actions/github-script@v6
+        env:
+          release_id: ${{ needs.create-release.outputs.release_id }}
+        with:
+          script: |
+            github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: process.env.release_id,
+              draft: false,
+              prerelease: false
+            })
 
       - run: yarn
 

@@ -5,7 +5,12 @@ const UPDATE_TAG_NAME = 'updater'
 const UPDATE_FILE_NAME = 'update.json'
 
 const getSignature = async (url) => {
-  const response = await fetch(url, { method: 'GET', headers: { 'Content-Type': 'application/octet-stream' } })
+  const response = await fetch(url, {
+    method: 'GET', headers: {
+      'Content-Type': 'application/octet-stream',
+      'Authorization': 'Bearer ' + process.env.GITHUB_TOKEN,
+    }
+  })
   return response.text()
 }
 
