@@ -24,7 +24,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-
+      - name: Get release info
+        id: release_body
+        run: echo "value=$(cat ./.github/release.info)" >> $GITHUB_OUTPUT
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -46,6 +48,8 @@ jobs:
         with:
           tagName: v__VERSION__
           releaseName: v__VERSION__
+          releaseBody:  ${{ steps.release_body.outputs.value }}
+
   update:
     needs: release
     runs-on: macos-latest
