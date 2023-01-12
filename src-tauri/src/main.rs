@@ -70,6 +70,11 @@ fn main() {
                     window.hide().unwrap();
                 }
                 "expand" => {
+                    // let local_window = tauri::WindowBuilder::new(
+                    //     app,
+                    //     "local",
+                    //     tauri::WindowUrl::App("index.html".into())
+                    //   ).build()?;
                     let window = app.get_window("main").unwrap();
                     window.show().unwrap();
                     window.unminimize().unwrap();
@@ -98,6 +103,7 @@ fn main() {
             commands::proxy::stop_proxy,
             commands::dns::pull_doh_servers_and_set_resolvers,
             commands::dns::query_dns_and_set_host,
+            commands::dns::query_dns_of_single_domain,
             commands::dns::get_all_hosts,
             commands::dns::get_all_doh_servers,
             commands::dns::add_doh_servers,

@@ -8,6 +8,8 @@ use crate::core::dns_stamp::Addr::Port;
 use crate::core::dns_stamp::Addr::SocketAddr;
 use dashmap::DashMap;
 use dashmap::DashSet;
+use serde::ser::SerializeMap;
+use serde::Serializer;
 use tokio::io::AsyncWriteExt;
 use tokio::time::timeout;
 use trust_dns_resolver::config::*;
@@ -29,6 +31,17 @@ impl DnsResult {
     }
 }
 
+impl serde::Serialize for DnsResult {
+    fn serialize<S>(&self, serializer: S) -> core::result::Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut s = serializer.serialize_map(Some(2))?;
+        s.serialize_entry("ip", &self.ip)?;
+        s.serialize_entry("cost", &(*&self.cost as u32))?;
+        s.end()
+    }
+}
 impl std::fmt::Display for DnsResult {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_fmt(format_args!("{} - {}ms", self.ip, self.cost))
@@ -189,11 +202,25 @@ async fn get_valid_doh_servers_from_collections(
         });
         handles.push(handle);
     }
-    for handle in handles {
-        if let Ok(Some(server)) = handle.await {
-            result.push(server);
+    let handles: Vec<_> = handles.into_iter().map(Box::pin).collect();
+    let mut handles = handles;
+    while !handles.is_empty() {
+        match futures::future::select_all(handles).await {
+            (Ok(Some(server)), _index, remaining) => {
+                result.push(server);
+                handles = remaining;
+            }
+            (_, _index, remaining) => {
+                // Ignoring all errors
+                handles = remaining;
+            }
         }
     }
+    // for handle in handles {
+    //     if let Ok(Some(server)) = handle.await {
+    //         result.push(server);
+    //     }
+    // }
     Ok(result)
 }
 
@@ -299,7 +326,7 @@ pub async fn query_domain_for_valid_ips(
                     Ok(Ok((_r, mut w))) => {
                         let end = tokio::time::Instant::now();
                         let cost = end.duration_since(begin).as_millis();
-                        // println!("{} 耗时： {}ms", ip, cost);
+                        // println!("{} {} 耗时： {}ms", domain, ip, cost);
                         let _ = w.shutdown().await;
                         result.push(DnsResult::new(ip, cost));
                         if only_find_first {
@@ -348,8 +375,21 @@ pub async fn query_domain_for_all_ips(domain: &str) -> Result<Arc<DashSet<String
         handles.push(handle);
     }
 
-    for handle in handles.iter_mut() {
-        let _ = tokio::try_join!(handle);
+    // for handle in handles.iter_mut() {
+    //     let _ = tokio::try_join!(handle);
+    // }
+    let handles: Vec<_> = handles.into_iter().map(Box::pin).collect();
+    let mut handles = handles;
+    while !handles.is_empty() {
+        match futures::future::select_all(handles).await {
+            (Ok(_val), _index, remaining) => {
+                handles = remaining;
+            }
+            (Err(_e), _index, remaining) => {
+                // Ignoring all errors
+                handles = remaining;
+            }
+        }
     }
     Ok(result.into())
 }
