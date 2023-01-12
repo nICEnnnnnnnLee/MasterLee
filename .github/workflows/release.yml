@@ -10,12 +10,11 @@ on:
     inputs:
 
 jobs:
-  release:
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [macos-latest, ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.platform }}
+  create-release:
+    runs-on: ubuntu-20.04
+    outputs:
+      release_id: ${{ steps.create-release.outputs.result }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -24,14 +23,35 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-      - name: Get release info
-        id: release_body
+      - name: Get version
+        run: echo "PACKAGE_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+      - name: Create release
+        id: create-release
         uses: actions/github-script@v6
         with:
           script: |
             const fs = require('fs');
-            let data = fs.readFileSync("./.github/release.info", {encoding:'utf8', flag:'r'});
-            fs.writeFileSync(process.env.GITHUB_OUTPUT, "value=" + data); 
+            let body = fs.readFileSync("./.github/release.info", {encoding:'utf8', flag:'r'});
+            const { data } = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: `v${process.env.PACKAGE_VERSION}`,
+              name: `MasterLee v${process.env.PACKAGE_VERSION}`,
+              body,
+              draft: false,
+              prerelease: false
+            })
+            return data.id
+
+  build-tauri:
+    needs: create-release
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-20.04, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+    steps:        
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -51,12 +71,10 @@ jobs:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD : ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
-          tagName: v__VERSION__
-          releaseName: v__VERSION__
-          releaseBody:  ${{ steps.release_body.outputs.value }}
+          releaseId: ${{ needs.create-release.outputs.release_id }}
 
   update:
-    needs: release
+    needs: [create-release, build-tauri]
     runs-on: macos-latest
     steps:
       - name: Checkout repository
