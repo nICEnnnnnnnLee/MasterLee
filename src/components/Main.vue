@@ -56,8 +56,8 @@ const loadConfig = async () => {
 
 
 function open_window_host() {
-  const webview = new WebviewWindow('host', {
-    url: 'host.html',
+  const webview = new WebviewWindow('dns', {
+    url: 'dns.html',
     width: 300,
     height: 500,
     decorations: false,

@@ -37,10 +37,10 @@
   </style>
 </head>
 <div data-tauri-drag-region class="titlebar">
-  <div class="titlebar-button" id="titlebar-minimize">
+  <!--<div class="titlebar-button" id="titlebar-minimize">
     <img src="/window-minimize.svg" alt="minimize" />
   </div>
-  <!-- <div class="titlebar-button" id="titlebar-maximize">
+   <div class="titlebar-button" id="titlebar-maximize">
     <img src="/window-maximize.svg" alt="maximize" />
   </div> -->
   <div class="titlebar-button" id="titlebar-close">
@@ -54,19 +54,18 @@
   <script type="module">
     import { createApp } from "vue";
     import "./src/style.css";
-    import Host from "./src/Host.vue";
+    import DNS from "./src/DNS.vue";
     import { appWindow } from '@tauri-apps/api/window'
-    document
-      .getElementById('titlebar-minimize')
-      .addEventListener('click', () => appWindow.minimize())
+    // document
+    //   .getElementById('titlebar-minimize')
+    //   .addEventListener('click', () => appWindow.minimize())
     // document
     //   .getElementById('titlebar-maximize')
     //   .addEventListener('click', () => appWindow.toggleMaximize())
     document
       .getElementById('titlebar-close')
       .addEventListener('click', () => appWindow.close())
-    createApp(Host).mount("#app");
+    createApp(DNS).mount("#app");
   </script>
 </body>
-
 </html>
