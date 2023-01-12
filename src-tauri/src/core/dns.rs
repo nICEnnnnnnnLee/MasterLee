@@ -8,8 +8,8 @@ use crate::core::dns_stamp::Addr::Port;
 use crate::core::dns_stamp::Addr::SocketAddr;
 use dashmap::DashMap;
 use dashmap::DashSet;
-use serde::Serializer;
 use serde::ser::SerializeMap;
+use serde::Serializer;
 use tokio::io::AsyncWriteExt;
 use tokio::time::timeout;
 use trust_dns_resolver::config::*;
@@ -31,7 +31,7 @@ impl DnsResult {
     }
 }
 
-impl serde::Serialize for DnsResult{
+impl serde::Serialize for DnsResult {
     fn serialize<S>(&self, serializer: S) -> core::result::Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -202,11 +202,25 @@ async fn get_valid_doh_servers_from_collections(
         });
         handles.push(handle);
     }
-    for handle in handles {
-        if let Ok(Some(server)) = handle.await {
-            result.push(server);
+    let handles: Vec<_> = handles.into_iter().map(Box::pin).collect();
+    let mut handles = handles;
+    while !handles.is_empty() {
+        match futures::future::select_all(handles).await {
+            (Ok(Some(server)), _index, remaining) => {
+                result.push(server);
+                handles = remaining;
+            }
+            (_, _index, remaining) => {
+                // Ignoring all errors
+                handles = remaining;
+            }
         }
     }
+    // for handle in handles {
+    //     if let Ok(Some(server)) = handle.await {
+    //         result.push(server);
+    //     }
+    // }
     Ok(result)
 }
 
@@ -361,8 +375,21 @@ pub async fn query_domain_for_all_ips(domain: &str) -> Result<Arc<DashSet<String
         handles.push(handle);
     }
 
-    for handle in handles.iter_mut() {
-        let _ = tokio::try_join!(handle);
+    // for handle in handles.iter_mut() {
+    //     let _ = tokio::try_join!(handle);
+    // }
+    let handles: Vec<_> = handles.into_iter().map(Box::pin).collect();
+    let mut handles = handles;
+    while !handles.is_empty() {
+        match futures::future::select_all(handles).await {
+            (Ok(_val), _index, remaining) => {
+                handles = remaining;
+            }
+            (Err(_e), _index, remaining) => {
+                // Ignoring all errors
+                handles = remaining;
+            }
+        }
     }
     Ok(result.into())
 }
