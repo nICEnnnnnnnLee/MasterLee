@@ -26,7 +26,12 @@ jobs:
           node-version: 16
       - name: Get release info
         id: release_body
-        run: echo "value=$(cat ./.github/release.info)" >> $GITHUB_OUTPUT
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            let data = fs.readFileSync("./.github/release.info", {encoding:'utf8', flag:'r'});
+            fs.writeFileSync(process.env.GITHUB_OUTPUT, "value=" + data); 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
