@@ -1,4 +1,1 @@
-* feat: 打开代理时增加成功与否的判断
-* feat: 智能选择ip时尽量与上一次不相同
-* feat: 添加单独的DNS查询页面
-* ci: 生成release时自动添加release info
+* feat: 加强异常处理，确保`proxy-client`、`proxy-server`的连接近乎同时关闭
