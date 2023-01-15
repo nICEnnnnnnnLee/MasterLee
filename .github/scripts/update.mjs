@@ -32,6 +32,7 @@ const options = { owner: context.repo.owner, repo: context.repo.repo }
 const { data: release } = await octokit.rest.repos.getLatestRelease(options)
 updateData.name = release.tag_name
 for (const { name, browser_download_url } of release.assets) {
+  const proxy_browser_download_url = 'https://ghproxy.com/' + browser_download_url
   if (name.endsWith('.msi.zip')) {
     updateData.platforms.win64.url = browser_download_url
     updateData.platforms['windows-x86_64'].url = browser_download_url
