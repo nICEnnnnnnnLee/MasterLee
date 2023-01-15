@@ -11,6 +11,9 @@
 ☞ Q: 为什么找到IP之后不直接改host要用代理呢?  
 ☞ A: ![为什么 这个问题我也想问 我也不明白](why_not_host.gif)  
 
+## 注意事项
++ 请尽量不要安装在C盘. 因为程序会对自身所在的`./data`目录进行读写, 安装在这类路径会需要以管理员身份运行, 否则无法保存`doh`和`host`
+
 ## 使用方法  
 + 点击`查找可用DoH`按钮, 根据[DNSCrypt](https://github.com/DNSCrypt/dnscrypt-resolvers)查找并筛选可用DoH服务
 + 点击`查找可用IP`按钮, 根据现有的DoH服务查找并筛选最优ip(需要等待上一步完成)
