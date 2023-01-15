@@ -55,25 +55,25 @@ const loadConfig = async () => {
 }
 
 
-function open_window_host() {
-  const webview = new WebviewWindow('dns', {
-    url: 'dns.html',
-    width: 300,
-    minWidth: 300,
-    height: 500,
-    minHeight: 500,
-    center: true,
-    title: 'DNS查询',
-    decorations: false,
-    focus: true,
-  })
-  webview.once('tauri://created', function () {
-    console.log('webview window successfully created');
-  })
-  webview.once('tauri://error', function (e) {
-    console.log('an error occurred during webview window creation', e);
-  })
-}
+// function open_window_host() {
+//   const webview = new WebviewWindow('dns', {
+//     url: 'dns.html',
+//     width: 300,
+//     minWidth: 300,
+//     height: 500,
+//     minHeight: 500,
+//     center: true,
+//     title: 'DNS查询',
+//     decorations: false,
+//     focus: true,
+//   })
+//   webview.once('tauri://created', function () {
+//     console.log('webview window successfully created');
+//   })
+//   webview.once('tauri://error', function (e) {
+//     console.log('an error occurred during webview window creation', e);
+//   })
+// }
 </script>
 
 
@@ -83,11 +83,11 @@ function open_window_host() {
     <textarea id="domains-input" rows="15" cols="50" v-model="domains_str"></textarea>
   </div>
   <div class="card">
-    <p>
+    <!-- <p>
     <div class="btn">
       <button type="button" @click="open_window_host">打开DNS查询页面</button>
     </div>
-    </p>
+    </p> -->
     <p>
       监听:
       <input id="ip-input" style="width: 80px;" v-model="bind_ip" placeholder="请输入监听ip..." />

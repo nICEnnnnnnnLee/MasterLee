@@ -1,1 +1,5 @@
-* feat: 加强异常处理，确保`proxy-client`、`proxy-server`的连接近乎同时关闭
+* feat: 添加菜单栏
+    * feat: 菜单栏添加`打开配置文件夹选项`
+    * refactor: `打开DNS查询页面`由webview页面移至菜单栏
+* feat: 标题栏添加版本信息
+* feat: 升级包下载路径使用`ghproxy`代理

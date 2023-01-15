@@ -5,11 +5,10 @@
 
 mod commands;
 mod core;
+mod menu;
 mod state;
-use tauri::{
-    CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
-    WindowEvent,
-};
+mod system_tray;
+use tauri::{Manager, WindowEvent};
 use tokio::sync::mpsc::{Receiver, Sender};
 use tokio::sync::Mutex;
 pub struct ProxyManagerSender(Mutex<Sender<u32>>);
@@ -35,57 +34,16 @@ fn read_conf(handle: tauri::AppHandle) -> String {
 }
 
 fn main() {
-    let expand = CustomMenuItem::new("expand".to_string(), "还原窗口");
-    let hide = CustomMenuItem::new("hide".to_string(), "隐藏窗口");
-    let quit = CustomMenuItem::new("quit".to_string(), "退出");
-    let tray_menu = SystemTrayMenu::new()
-        .add_item(expand)
-        .add_native_item(SystemTrayMenuItem::Separator)
-        .add_item(hide)
-        .add_native_item(SystemTrayMenuItem::Separator)
-        .add_item(quit);
-    let system_tray = SystemTray::new().with_menu(tray_menu);
+    println!("当前版本: {}", env!("CARGO_PKG_VERSION"));
     tauri::Builder::default()
-        .system_tray(system_tray)
-        .on_system_tray_event(|app, event| match event {
-            SystemTrayEvent::LeftClick {..} => {
-                println!("system tray received a left click");
-            }
-            SystemTrayEvent::RightClick { .. } => {
-                println!("system tray received a right click");
-            }
-            SystemTrayEvent::DoubleClick { .. } => {
-                let window = app.get_window("main").unwrap();
-                if !window.is_visible().unwrap() {
-                    window.show().unwrap();
-                    window.unminimize().unwrap();
-                }
-            }
-            SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-                "quit" => {
-                    std::process::exit(0);
-                }
-                "hide" => {
-                    let window = app.get_window("main").unwrap();
-                    window.hide().unwrap();
-                }
-                "expand" => {
-                    // let local_window = tauri::WindowBuilder::new(
-                    //     app,
-                    //     "local",
-                    //     tauri::WindowUrl::App("index.html".into())
-                    //   ).build()?;
-                    let window = app.get_window("main").unwrap();
-                    window.show().unwrap();
-                    window.unminimize().unwrap();
-                }
-                _ => {}
-            },
-            _ => {}
-        })
+        .system_tray(system_tray::generate_system_tray())
+        .on_system_tray_event(system_tray::event_handler)
+        .menu(menu::generate_menu())
+        .on_menu_event(menu::event_handler)
         .setup(|app| {
             let window = app.get_window("main").unwrap();
             let window_ = window.clone();
+            let _ = window.set_title(&format!("MasterLee {}", env!("CARGO_PKG_VERSION")));
             window.on_window_event(move |event| {
                 if let WindowEvent::Resized(size) = event {
                     if size.width == 0 && size.height == 0 {
@@ -108,6 +66,7 @@ fn main() {
             commands::dns::get_all_doh_servers,
             commands::dns::add_doh_servers,
             commands::dns::add_hosts,
+            commands::show_in_folder,
         ])
         .build(tauri::generate_context!())
         .expect("error while running tauri application")

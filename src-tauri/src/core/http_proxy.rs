@@ -87,13 +87,15 @@ pub async fn handle(stream: TcpStream) -> io::Result<()> {
             let client_to_server = async {
                 let _ = copy(&mut local_reader, &mut remote_writer).await;
                 // println!("{} server连接断开", dst1);
-                remote_writer.shutdown().await
+                let _ = remote_writer.shutdown().await;
+                Ok(()) as io::Result<()>
             };
 
             let server_to_client = async {
                 let _ = copy(&mut remote_reader, &mut local_writer).await;
                 // println!("{} client连接断开", dst2);
-                local_writer.shutdown().await
+                let _ = local_writer.shutdown().await;
+                Ok(())
             };
 
             tokio::try_join!(client_to_server, server_to_client)?;
